@@ -1,0 +1,21 @@
+{
+  "name": "handtracker",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Gil Fewster <gil@theroyals.com.au> (http://www.advanceparty.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "autoprefixer": "^9.6.1",
+    "cssnano": "^4.1.10",
+    "eslint": "^6.1.0",
+    "parcel": "^1.12.3",
+    "parcel-bundler": "^1.12.3",
+    "postcss-assets": "^5.0.0"
+  }
+}
