@@ -1,0 +1,69 @@
+@import "box.scss";
+@import "hud.scss";
+
+:root {
+  --col-bg: #fff;
+  --col-box: #009900;
+  --col-text: #333;
+  --font-size-base: 10px;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
+}
+
+html {
+  min-width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: var(--col-bg);
+  color: var(--col-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+}
+
+body {
+  font-size: 1.2rem;
+}
+
+p,
+ul,
+ol,
+textarea,
+input,
+blockquote {
+  font-size: 1em;
+  line-height: 1.75em;
+}
+
+video,
+.canvas {
+  z-index: 10;
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+video {
+  z-index: 1;
+  object-fit: cover;
+}
+
+button {
+  display: inline;
+  border-radius: 10px;
+  padding: 1em 2em;
+  text-transform: uppercase;
+  background-color: #ffffff;
+  border: 1px solid #333;
+  outline: none;
+}
+
+button:disabled {
+  background-color: rgba(0, 0, 0, 0.25);
+  border: 1px dashed rgba(0, 0, 0, 0.5);
+}
+
+.hidden {
+  display: none;
+}

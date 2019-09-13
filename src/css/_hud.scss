@@ -1,0 +1,11 @@
+.msgBox {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  min-width: 280px;
+  width: 100%;
+  border-top: 1px solid #000;
+  padding: 1em;
+  color: #00ff00;
+  background: rgba(0, 0, 0, 0.75);
+}
