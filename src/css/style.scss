@@ -1,5 +1,4 @@
 @import "box.scss";
-@import "hud.scss";
 
 :root {
   --col-bg: #fff;
@@ -22,7 +21,21 @@ html {
 }
 
 body {
+  margin: 0;
+  padding: 0;
   font-size: 1.2rem;
+
+  display: grid;
+  grid-template-areas:
+    "video hud"
+    "ui ui";
+  grid-template-rows: auto 1fr;
+  grid-template-columns: auto 1fr;
+}
+
+.ui {
+  grid-area: ui;
+  padding: 1em;
 }
 
 p,
@@ -35,18 +48,20 @@ blockquote {
   line-height: 1.75em;
 }
 
-video,
-.canvas {
-  z-index: 10;
-  display: block;
-  position: absolute;
-  width: 100%;
-  height: 100%;
+.hidden {
+  display: none;
 }
 
-video {
-  z-index: 1;
-  object-fit: cover;
+.msgBox {
+  grid-area: hud;
+  padding: 1em;
+  color: #00ff00;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.video {
+  grid-area: video;
+  transition: opacity 300ms;
 }
 
 button {
@@ -59,11 +74,11 @@ button {
   outline: none;
 }
 
+button:active {
+  background-color: #009900;
+}
+
 button:disabled {
   background-color: rgba(0, 0, 0, 0.25);
   border: 1px dashed rgba(0, 0, 0, 0.5);
-}
-
-.hidden {
-  display: none;
 }
