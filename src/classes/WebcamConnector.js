@@ -1,15 +1,15 @@
 const isSupported = () => navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
 const unsupportedMsg = 'Browser API navigator.mediaDevices.getUserMedia not available';
 
-export class WebcamConnector {
+export default class WebcamConnector {
   static get FacingMode() {
     return { ...facingMode };
   }
 
   constructor({
+    videoElement = null,
     width = 300,
     height = 250,
-    videoElement = null,
     audio = false,
     facingMode = WebcamConnector.FacingMode.User,
   } = {}) {

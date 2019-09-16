@@ -12,43 +12,25 @@
     "@tensorflow-models/knn-classifier": "1.2.1",
     "@tensorflow-models/mobilenet": "^2.0.2",
     "@tensorflow/tfjs": "^1.2.1",
-    "stats.js": "^0.17.0"
+    "sirv-cli": "^0.4.4"
   },
   "scripts": {
-    "watch": "cross-env NODE_ENV=development parcel src/index.html --no-hmr --open",
-    "build": "cross-env NODE_ENV=production parcel build src/index.html --public-url ./",
-    "lint": "eslint .",
-    "link-local": "yalc link @tensorflow-models/knn-classifier"
-  },
-  "browser": {
-    "crypto": false
+    "build": "rollup -c",
+    "autobuild": "rollup -c -w",
+    "dev": "run-p start:dev autobuild",
+    "start": "sirv public --single",
+    "start:dev": "sirv public --single --dev"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.0",
-    "@babel/plugin-transform-runtime": "^7.6.0",
     "clang-format": "~1.2.2",
-    "cross-env": "^5.2.0",
     "dat.gui": "^0.7.1",
-    "parcel-bundler": "~1.10.3",
-    "postcss-assets": "^5.0.0",
-    "sass": "^1.22.12",
-    "yalc": "~1.0.0-pre.21"
-  },
-  "eslintConfig": {
-    "extends": "google",
-    "rules": {
-      "require-jsdoc": 0,
-      "valid-jsdoc": 0
-    },
-    "env": {
-      "es6": true
-    },
-    "parserOptions": {
-      "ecmaVersion": 8,
-      "sourceType": "module"
-    }
-  },
-  "eslintIgnore": [
-    "dist/"
-  ]
+    "npm-run-all": "^4.1.5",
+    "rollup": "^1.12.0",
+    "rollup-plugin-commonjs": "^10.0.0",
+    "rollup-plugin-livereload": "^1.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-svelte": "^5.0.3",
+    "rollup-plugin-terser": "^4.0.4",
+    "svelte": "^3.0.0"
+  }
 }
