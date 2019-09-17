@@ -5,49 +5,65 @@
   import TermTrainer from "./TermTrainer.svelte";
   import Trainer from "../classes/Trainer.js";
 
-  let messages = [];
-  let trainingWords = [];
-  let trainer;
-  let webcamView;
+  import { labels } from "../stores/demoContent.js";
 
-  // keras props
-  trainingWords = [...trainingWords, "up"];
-  trainingWords = [...trainingWords, "down"];
-  trainingWords = [...trainingWords, "-"];
+  let webcamView;
+  let status;
+  let messages = [];
+  let trainingLabels = new Map();
+  const trainer = new Trainer();
 
   const postMessage = msg => (messages = [...messages, msg]);
+  const postStatus = str => (status = `Status: ${str}`);
   const train = word => {
     trainer.addExample(webcamView.getVideoElement(), word);
   };
 
+  const addTrainingLabel = label => {
+    // need to generate a new Map() each time to trigger Svelte's reactive binding
+    const entry = [`id${trainingLabels.size}`, label];
+    trainingLabels = new Map([...trainingLabels, entry]);
+  };
+
   const update = async () => {
     const prediction = await trainer.predictClass(webcamView.getVideoElement());
-    if (prediction) {
-      postMessage(`prediction: ${prediction.label}`);
+    try {
+      const { labelId, confidences } = prediction;
+      postMessage(`prediction: ${trainingLabels.get(labelId)}`);
+    } catch (e) {
+      // no prediction available
+    } finally {
+      requestAnimationFrame(update);
     }
-    requestAnimationFrame(update);
   };
 
   const init = async () => {
     postMessage("Initialising neural network.");
-    trainer = new Trainer();
-    const ready = await trainer.loadModule();
+    postStatus("Initialising");
+
+    labels.forEach(label => addTrainingLabel(label));
+    await trainer.loadModule();
+
     postMessage("Neural network ready.");
+    postStatus("Ready");
     update();
   };
+
   onMount(() => init());
 </script>
 
 <div>
-  <MessageBox title="Info" className={'msgBox'} {messages} />
+  <MessageBox title="Info" className={'msgBox'} {messages} {status} />
   <WebcamView
     bind:this={webcamView}
     on:status={msg => postMessage(msg.detail)}
     on:error={msg => postMessage(msg.detail)} />
   <ul class="ui">
-    {#each trainingWords as word, i}
+    {#each [...trainingLabels.keys()] as key}
       <li>
-        <TermTrainer name={`Train ${word}`} on:click={() => train(i)} />
+        <TermTrainer
+          name={`Train ${trainingLabels.get(key)}`}
+          on:click={() => train(key)} />
       </li>
     {/each}
 

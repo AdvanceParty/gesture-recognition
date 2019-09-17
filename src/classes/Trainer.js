@@ -15,18 +15,6 @@ export default class Trainer {
     return this.ready;
   }
 
-  // _infer(source) {
-  //   try {
-  //     console.log(image);
-  //     const image = tf.browser.fromPixels(source);
-  //     const inferred = this.mobilenet.infer(image, 'conv_preds');
-  //     // image.dispose();
-  //     return inferred;
-  //   } catch (e) {
-  //     //
-  //   }
-  // }
-
   addExample(source, label) {
     if (!this.mobilenet) return;
     try {
@@ -50,7 +38,7 @@ export default class Trainer {
       const res = await this.classifier.predictClass(logits, this.TOPK);
       image.dispose();
       logits.dispose();
-      return { ...res };
+      return { labelId: res.label, confidences: res.confidences };
     } catch (e) {
       //
     }
