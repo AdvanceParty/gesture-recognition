@@ -4,73 +4,70 @@
   import WebcamView from "./WebcamView.svelte";
   import TermTrainer from "./TermTrainer.svelte";
   import Trainer from "../classes/Trainer.js";
+  import { STATUS_LEVELS } from "../constants.js";
 
   import { labels } from "../stores/demoContent.js";
-  import {
-    confidences,
-    label,
-    nnStatus,
-    webcamStatus
-  } from "../stores/prediction.js";
+  import { status, messages, STATUS_MONITORS } from "../stores/store.js";
 
   let webcamView;
-  let status;
-  let messages = [];
   let trainingLabels = new Map();
   const trainer = new Trainer();
 
-  const postMessage = msg => (messages = [...messages, msg]);
-  const postStatus = str => (status = `Status: ${str}`);
   const train = word => {
     trainer.addExample(webcamView.getVideoElement(), word);
   };
 
+  const postMessage = msg => {
+    messages.update(obj => {
+      obj.push(msg);
+      return obj;
+    });
+  };
+
+  const postStatus = (type, value) => {
+    status.update(obj => {
+      obj[type] = value;
+      return obj;
+    });
+  };
+
   const addTrainingLabel = label => {
-    // need to generate a new Map() each time to trigger Svelte's reactive binding
     const entry = [`id${trainingLabels.size}`, label];
     trainingLabels = new Map([...trainingLabels, entry]);
   };
 
-  const update = async () => {
+  const draw = async () => {
     const prediction = await trainer.predictClass(webcamView.getVideoElement());
-    // label.set(prediction.label);
-    // confidences.set(prediction.confidences);
-    try {
-      postMessage(`prediction: ${trainingLabels.get(prediction.label)}`);
-    } catch (e) {
-      // no prediction available
-    } finally {
-      requestAnimationFrame(update);
-    }
+    requestAnimationFrame(draw);
   };
 
   const init = async () => {
-    nnStatus.set("Initialising.");
+    postMessage("Getting ready");
+    postStatus(STATUS_MONITORS.WEBCAM, STATUS_LEVELS.INITIALISING);
+    postStatus(STATUS_MONITORS.KERAS, STATUS_LEVELS.INITIALISING);
 
     labels.forEach(label => addTrainingLabel(label));
+    postMessage("Reversing Polarity");
     await trainer.loadModule();
-
-    nnStatus.set("Ready.");
-    update();
+    postStatus(STATUS_MONITORS.KERAS, STATUS_LEVELS.READY);
+    postMessage("Rebooting Flux Capacitor");
+    draw();
   };
 
   onMount(() => init());
 </script>
 
-<div>
-  <MessageBox title="Info" className={'msgBox'} {messages} />
-  <WebcamView
-    bind:this={webcamView}
-    on:status={msg => webcamStatus.set(msg.detail)}
-    on:error={msg => webcamStatus.set('Error')} />
-  <ul class="ui">
-    {#each [...trainingLabels.keys()] as key}
-      <li>
-        <TermTrainer
-          name={`Train ${trainingLabels.get(key)}`}
-          on:click={() => train(key)} />
-      </li>
-    {/each}
-
-  </ul>
-</div>
+<WebcamView
+  bind:this={webcamView}
+  on:status={status => postStatus(STATUS_MONITORS.WEBCAM, status.detail)}
+  on:error={msg => postStatus(STATUS_MONITORS.WEBCAM, STATUS_LEVELS.ERROR)} />
+<ul class="ui">
+  {#each [...trainingLabels.keys()] as key}
+    <li>
+      <TermTrainer
+        name={`Train ${trainingLabels.get(key)}`}
+        on:click={() => train(key)} />
+    </li>
+  {/each}
+</ul>
+<MessageBox title="System Information" className={'msgBox'} />

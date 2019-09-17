@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
   import WebcamConnector from "../classes/WebcamConnector.js";
+  import { STATUS_LEVELS } from "../constants.js";
 
   export let width = 300;
   export let height = 250;
@@ -15,7 +16,7 @@
   let videoElement;
   const dispatch = createEventDispatcher();
   const init = async () => {
-    dispatch("status", "Initialising webcam.");
+    dispatch("status", STATUS_LEVELS.INITIALISING);
     const cam = new WebcamConnector({
       videoElement,
       width,
@@ -24,13 +25,13 @@
     });
     try {
       await cam.start();
-      dispatch("status", "Webcam connected.");
+      dispatch("status", STATUS_LEVELS.CONNECTED);
     } catch (e) {
-      dispatch("error", e.message);
+      dispatch("error", STATUS_LEVELS.ERROR);
     }
   };
 
   onMount(() => init());
 </script>
 
-<video autoplay="true" bind:this={videoElement} />
+<video class="webcam-view" autoplay="true" bind:this={videoElement} />
