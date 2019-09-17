@@ -6,6 +6,12 @@
   import Trainer from "../classes/Trainer.js";
 
   import { labels } from "../stores/demoContent.js";
+  import {
+    confidences,
+    label,
+    nnStatus,
+    webcamStatus
+  } from "../stores/prediction.js";
 
   let webcamView;
   let status;
@@ -27,9 +33,10 @@
 
   const update = async () => {
     const prediction = await trainer.predictClass(webcamView.getVideoElement());
+    // label.set(prediction.label);
+    // confidences.set(prediction.confidences);
     try {
-      const { labelId, confidences } = prediction;
-      postMessage(`prediction: ${trainingLabels.get(labelId)}`);
+      postMessage(`prediction: ${trainingLabels.get(prediction.label)}`);
     } catch (e) {
       // no prediction available
     } finally {
@@ -38,14 +45,12 @@
   };
 
   const init = async () => {
-    postMessage("Initialising neural network.");
-    postStatus("Initialising");
+    nnStatus.set("Initialising.");
 
     labels.forEach(label => addTrainingLabel(label));
     await trainer.loadModule();
 
-    postMessage("Neural network ready.");
-    postStatus("Ready");
+    nnStatus.set("Ready.");
     update();
   };
 
@@ -53,11 +58,11 @@
 </script>
 
 <div>
-  <MessageBox title="Info" className={'msgBox'} {messages} {status} />
+  <MessageBox title="Info" className={'msgBox'} {messages} />
   <WebcamView
     bind:this={webcamView}
-    on:status={msg => postMessage(msg.detail)}
-    on:error={msg => postMessage(msg.detail)} />
+    on:status={msg => webcamStatus.set(msg.detail)}
+    on:error={msg => webcamStatus.set('Error')} />
   <ul class="ui">
     {#each [...trainingLabels.keys()] as key}
       <li>

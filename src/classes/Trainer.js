@@ -7,6 +7,8 @@ export default class Trainer {
     this.ready = false;
     this.TOPK = 3;
     this.classifier = knnClassifier.create();
+    this._classPrediction = null;
+    this._confidences = [];
   }
 
   async loadModule() {
@@ -36,6 +38,9 @@ export default class Trainer {
       const image = tf.browser.fromPixels(source);
       const logits = this.mobilenet.infer(image, 'conv_preds');
       const res = await this.classifier.predictClass(logits, this.TOPK);
+      console.log('-----');
+      console.log(res.confidences);
+      console.log('-------');
       image.dispose();
       logits.dispose();
       return { labelId: res.label, confidences: res.confidences };
